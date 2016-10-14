@@ -1,0 +1,13 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/battz-app/battz-app.html",
+  "sources": [
+    "src/**/*",
+    "images/**/*",
+    "bower.json"
+  ],
+  "includeDependencies": [
+    "manifest.json",
+    "bower_components/webcomponentsjs/webcomponents-lite.js"
+  ]
+}

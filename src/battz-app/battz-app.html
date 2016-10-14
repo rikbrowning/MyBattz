@@ -1,0 +1,73 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-styles/default-theme.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+
+<dom-module id="battz-app">
+    <template>
+        <style>
+            :host {
+                display: block;
+                @apply(--paper-font-common-base);
+            }
+
+            app-header {
+                background-color: var(--google-green-500);
+                color: white;
+            }
+
+        </style>
+        <!-- Configure Firebase app: -->
+        <firebase-app name="mybattz" app="{{app}}" >
+        </firebase-app>
+        <firebase-auth id="auth" app="{{app}}" user="{{user}}" provider="google" on-error="handleError" online="{{online}}" signed-in="{{signedIn}}">
+        </firebase-auth>
+        <app-header-layout>
+            <app-header reveals>
+                <app-toolbar>
+                    <div main-title>My Battz</div>
+                    <template is="dom-if" if="{{!signedIn}}">
+                        <paper-button on-tap="signIn">Sign in</paper-button>
+                    </template>
+                    <template is="dom-if" if="{{signedIn}}">
+                        <paper-button on-tap="signOut">Sign out</paper-button>
+                    </template>
+
+                </app-toolbar>
+            </app-header>
+            <div>
+                <template is="dom-if" if="{{signedIn}}">
+                    <div>you are good to go <span>{{user.displayName}}</span></div>
+                </template>
+                <template is="dom-if" if="{{!signedIn}}">
+                    <div>Sign in please</div>
+                </template>
+            </div>
+        </app-header-layout>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'battz-app',
+
+            properties: {},
+
+            signIn: function() {
+                this.$.auth.signInWithPopup();
+            },
+            signOut: function() {
+                this.$.auth.signOut();
+            }
+
+        });
+
+    </script>
+</dom-module>

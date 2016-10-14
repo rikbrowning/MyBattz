@@ -1,0 +1,7 @@
+{
+  "name": "MyBattz",
+  "short_name": "MyBattz",
+  "description": "Lipo Tracker",
+  "start_url": "/",
+  "display": "standalone"
+}
