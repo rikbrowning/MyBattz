@@ -44,7 +44,8 @@
             </app-header>
             <div>
                 <template is="dom-if" if="{{signedIn}}">
-                    <div>you are good to go <span>{{user.displayName}}</span></div>
+                    <battery-list batteries="{{persistedBatteries}}">                        
+                    </battery-list>
                 </template>
                 <template is="dom-if" if="{{!signedIn}}">
                     <div>Sign in please</div>
