@@ -1,0 +1,40 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+
+<dom-module id="battery-card">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			
+			paper-material {
+				background-color: white;
+				padding: 20px;
+			}
+		</style>
+		<paper-material>
+			<h2>{{battery.name}}</h2>
+			<template is="dom-if" if="{{online}}">
+				<paper-button on-tap="tapEdit">Edit</paper-button>
+			</template>
+		</paper-material>
+	</template>
+	<script>
+        Polymer({
+            is:"battery-card",
+            properties:{
+                battery:{
+                    type:Object
+                },
+                online:Boolean
+            },
+            tapEdit:function(){
+                window.location.href="/edit/"+this.battery.$key;
+            }
+        })
+    </script>
+</dom-module>

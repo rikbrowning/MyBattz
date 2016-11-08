@@ -23,89 +23,99 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="battery-icons.html">
+<link rel="import" href="battery-data.html">
 
 <dom-module id="battz-app">
-    <template>
-        <style>
-            :host {
-                --app-primary-color: #4285f4;
-                --app-secondary-color: black;
-                display: block;
-            }
+	<template>
+		<style>
+			:host {
+				--app-primary-color: #4285f4;
+				--app-secondary-color: black;
+				display: block;
+			}
+			
+			app-header {
+				color: #fff;
+				background-color: var(--app-primary-color);
+			}
+			
+			app-header paper-icon-button {
+				--paper-icon-button-ink-color: white;
+			}
+			
+			.drawer-list {
+				margin: 0 20px;
+			}
+			
+			.drawer-list a {
+				display: block;
+				padding: 0 16px;
+				text-decoration: none;
+				color: var(--app-secondary-color);
+				line-height: 40px;
+			}
+			
+			.drawer-list a.iron-selected {
+				color: black;
+				font-weight: bold;
+			}
+			paper-button{
+				position: absolute;
+    			bottom: 150px;
+			}
+		</style>
+		<firebase-app name="mybattz" app="{{app}}" >
+		</firebase-app>
+		<firebase-auth id="auth" app="{{app}}" user="{{user}}" provider="google" on-error="handleError" signed-in="{{signedIn}}" online="{{online}}">
+		</firebase-auth>
+		<battery-data id="data" app="{{app}}" user="{{user}}" batteries="{{batteries}}" edit-key="[[editKey]]" battery="{{battery}}"></battery-data>
 
-            app-header {
-                color: #fff;
-                background-color: var(--app-primary-color);
-            }
 
-            app-header paper-icon-button {
-                --paper-icon-button-ink-color: white;
-            }
+		<app-location route="{{route}}"></app-location>
+		<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+		<app-route route="{{subroute}}" pattern="/:id" data="{{subrouteData}}"></app-route>
 
-            .drawer-list {
-                margin: 0 20px;
-            }
+		<app-drawer-layout fullbleed>
+			<!-- Drawer content -->
+			<app-drawer>
+				<app-toolbar>Menu</app-toolbar>
+				<iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+					<a name="list" href="/list">Battery List</a>
+					<template is="dom-if" if="{{online}}">
+					<a name="add" href="/edit">Add Battery</a>
+					</template>
+				</iron-selector>
+				<template is="dom-if" if="{{signedIn}}">
+					<paper-button on-tap="signOut">Sign out</paper-button>
+				</template>
+			</app-drawer>
 
-            .drawer-list a {
-                display: block;
-                padding: 0 16px;
-                text-decoration: none;
-                color: var(--app-secondary-color);
-                line-height: 40px;
-            }
+			<!-- Main content -->
+			<app-header-layout has-scrolling-region>
 
-            .drawer-list a.iron-selected {
-                color: black;
-                font-weight: bold;
-            }
+				<app-header condenses reveals effects="waterfall">
+					<app-toolbar>
+						<paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+						<div main-title>My Battz</div>
+						<template is="dom-if" if="{{!signedIn}}">
+							<paper-button on-tap="signIn">Sign in</paper-button>
+						</template>
+						
+					</app-toolbar>
+				</app-header>
 
-        </style>
-        <firebase-app name="mybattz" app="{{app}}" >
-        </firebase-app>
-        <firebase-auth id="auth" app="{{app}}" user="{{user}}" provider="google" on-error="handleError" online="{{online}}" signed-in="{{signedIn}}">
-        </firebase-auth>
-
-        <app-location route="{{route}}"></app-location>
-        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
-
-        <app-drawer-layout fullbleed>
-            <!-- Drawer content -->
-            <app-drawer>
-                <app-toolbar>Menu</app-toolbar>
-                <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-                    <a name="list" href="/list">Battery List</a>
-                    <a name="add" href="/add">Add Battery</a>
-                </iron-selector>
-            </app-drawer>
-
-            <!-- Main content -->
-            <app-header-layout has-scrolling-region>
-
-                <app-header condenses reveals effects="waterfall">
-                    <app-toolbar>
-                        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-                        <div main-title>My Battz</div>
-                        <template is="dom-if" if="{{!signedIn}}">
-                            <paper-button on-tap="signIn">Sign in</paper-button>
-                        </template>
-                        <template is="dom-if" if="{{signedIn}}">
-                            <paper-button on-tap="signOut">Sign out</paper-button>
-                        </template>
-                    </app-toolbar>
-                </app-header>
-
-                <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
-                    <battery-list name="list"></battery-list>
-                    <battery-add name="add"></battery-add>
+				<iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
+					<battery-list name="list" batteries="[[batteries]]" online="{{online}}"></battery-list>
+					<battery-edit name="edit" battery="{{battery}}"></battery-edit>
                     <battery-view404 name="view404">
-                        </my-view404>
-                        <battery-sign-in name="sign-in">Sign in please</battery-sign-in>
-                </iron-pages>
-            </app-header-layout>
-        </app-drawer-layout>
-    </template>
+                    </battery-view404>
+                    <battery-sign-in name="sign-in">Sign in please</battery-sign-in>
+				</iron-pages>
+			</app-header-layout>
+		</app-drawer-layout>
+	</template>
 
-    <script>
+	<script>
         Polymer({
             is: 'battz-app',
 
@@ -116,12 +126,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     observer: '_pageChanged'
                 }
             },
-
+            listeners:{
+                "mybattz-save":"_saveBattery"
+            },
             observers: [
-                '_routePageChanged(routeData.page,signedIn)'
+                '_routePageChanged(routeData.page,signedIn, online)',
+                "_subrouteDataChanged(subrouteData)"
             ],
 
-            _routePageChanged: function(page, signedIn) {
+            _routePageChanged: function(page, signedIn,online) {
+				if(!online){
+					this.page="list";
+					return;
+				}
                 if (signedIn && (!page || page === "sign-in")) {
                     page = "list";
 
@@ -129,9 +146,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if (!signedIn) {
                     page = "sign-in";
                 }
+                if(page === "edit"){
+                    this.battery = {
+                        name:"",
+                        description:"",
+                        cells:4,
+                        capacity:""
+                    };
+                }
                 this.page = page;
             },
-
+            _subrouteDataChanged:function(subrouteData){
+                if(subrouteData.id){
+                    this.editKey = subrouteData.id;
+                }
+            },
             _pageChanged: function(page) {
                 // Load page import on demand. Show 404 page if fails
                 var resolvedPageUrl = this.resolveUrl('battery-' + page + '.html');
@@ -140,6 +169,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _showPage404: function() {
                 this.page = 'view404';
+            },
+            _saveBattery:function(e){
+                
+                this.$.data.saveBattery(e.detail.battery).then(function(){
+                    window.location.href = "/list";
+                });
             },
 
             signIn: function() {

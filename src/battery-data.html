@@ -1,0 +1,64 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
+
+<dom-module id="battery-data">
+	<template>
+		<firebase-query id="query" app-name="mybattz" path="[[batteriesPath]]" data="{{firebaseData}}" online="{{online}}" app="{{app}}"></firebase-query>
+		<firebase-document id="document" app-name="mybattz" data="{{battery}}" app="{{app}}" path="[[batteryPath]]"></firebase-document>
+		<app-indexeddb-mirror key="notes" data="{{firebaseData}}" persisted-data="{{batteries}}">
+		</app-indexeddb-mirror>
+	</template>
+
+	<script>
+        Polymer({
+
+            is: 'battery-data',
+
+            properties: {
+                app: Object,
+                user: Object,
+                batteriesPath:{
+                    computed:"_computeBatteriesPath(user)"
+                },
+                batteryPath:{
+                    type:String
+                },
+                batteries: {
+                    type: Array,
+                    notify: true
+                },
+                battery:{
+                    type:Object,
+                    notify:true
+                },
+                editKey:{
+                    type:String
+                },
+                online:{
+                    type:Boolean,
+                    notify:true
+                }
+            },
+            observers:["_computeBatteryPath(batteriesPath,editKey)"],
+            saveBattery:function(){
+                var that = this;
+                return this.$.document.save(this.batteriesPath,this.editKey).then(function(){
+                    that.$.document.reset();
+                });
+
+            },
+            _computeBatteriesPath:function(user){
+                if(!user)return;
+                return "/batteries/"+user.uid;
+            },
+            _computeBatteryPath:function(batteriesPath,editKey){
+                this.batteryPath = batteriesPath + "/" + editKey;
+            }
+
+
+        });
+
+    </script>
+</dom-module>

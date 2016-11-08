@@ -1,36 +1,76 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-styles/default-theme.html">
-<link rel="import" href="../../bower_components/paper-styles/typography.html">
-<link rel="import" href="../../bower_components/paper-styles/color.html">
-<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-styles/default-theme.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="battery-card.html">
 
 <dom-module id="battery-list">
-    <template>
-        <style>
-            paper-fab{
-                --paper-fab:{
-                    position:fixed;
-                    bottom:20px;
-                    right:20px;
-                }
-            }
-        </style>
-        <a title="Add battery" href="/add">
-            <paper-fab icon="add"></paper-fab>
-        </a>
-    </template>
+	<template>
+		<style>
+			:host {
+				padding: 10px;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				align-content: space-around;
+			}
+			
+			paper-fab {
+				--paper-fab: {
+					position: fixed;
+					bottom: 20px;
+					right: 20px;
+				}
+			}
+			
+			battery-card {
+				margin: 10px;
+				flex: 1 1 33%;
+				max-width: 30%;
+			}
+			
+			@media(max-width:1200px) {
+				battery-card {
+					flex-basis: 45%;
+					max-width: 45%;
+				}
+			}
+			
+			@media(max-width:900px) {
+				:host {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					flex-wrap: nowrap;
+				}
+				battery-card {
+					width: 100%;
+					max-width: 100%;
+				}
+			}
+		</style>
+		<template is="dom-repeat" items="[[batteries]]">
+			<battery-card battery="[[item]]" online="[[online]]"></battery-card>
+		</template>
+		<template is="dom-if" if="{{online}}">
+			<a title="Add battery" href="/edit">
+				<paper-fab icon="add"></paper-fab>
+			</a>
+		</template>
+	</template>
 
-    <script>
+	<script>
         Polymer({
 
             is: 'battery-list',
 
             properties: {
                 batteries: {
-                    type: Array,
-                    notifies: true
-                }
+                    type: Array
+                },
+                online:Boolean
             }
         });
     </script>

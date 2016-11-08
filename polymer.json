@@ -4,7 +4,7 @@
   "fragments": [
     "src/battery-sign-in.html",
     "src/battery-list.html",
-    "src/battery-add.html",
+    "src/battery-edit.html",
     "src/battery-view404.html"
   ],
   "sourceGlobs": [
